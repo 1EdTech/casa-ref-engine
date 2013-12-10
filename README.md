@@ -17,5 +17,5 @@ thor engine:setup
 ## Run
 
 ```
-rackup
+bundle exec rackup
 ```

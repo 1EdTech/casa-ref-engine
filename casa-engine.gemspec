@@ -11,10 +11,7 @@ Gem::Specification.new do |s|
   s.files       = ['lib/casa-engine.rb']
 
   s.add_dependency 'sinatra'
-  s.add_dependency 'sinatra-contrib'
-
   s.add_dependency 'casa-publisher'
-
   s.add_dependency 'thor'
 
   s.add_development_dependency 'rake'
