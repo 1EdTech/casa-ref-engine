@@ -11,27 +11,68 @@ class Engine < Thor
 
     if File.exists? settings_file
       say 'Found settings.yml -- engine is already set up', :green
-      if ask("Would you like to overwrite ('Y' to overwrite)?") == 'Y'
+      if yes? "Would you like to overwrite ('y' to overwrite)?"
         File.delete settings_file
-        say 'Settings file deleted', :cyan
+        say 'Settings file deleted', :green
       else
-        return say 'SETUP ABORTED', :green
+        return say 'SETUP ABORTED -- settings.yml already exists', :red
       end
     end
 
     settings = {
-        'modules' => []
+        'modules' => [],
+        'database' => {}
     }
 
+    say 'SETUP MODULES', :magenta
+
     ['publisher'].each do |mod|
-      if ask("Include #{mod} module ('Y' to include)?") == 'Y'
+      if yes? "Include #{mod} module ('y' to include)?"
         settings['modules'].push mod
+        say "Including #{mod} module", :cyan
+      else
+        say "Not including #{mod} module", :cyan
       end
     end
 
-    File.open(settings_file, 'w+') {|f| f.write settings.to_yaml }
+    say 'SETUP DATABASE', :magenta
 
-    say 'SAVED settings.yml -- SETUP COMPLETE', :green
+    if yes? "Use mysql ('y' to use)?"
+      settings['database'][:adapter] = 'mysql2'
+      say 'Using mysql2 adapter', :cyan
+    elsif yes? "Use mssql ('y' to use)?"
+      settings['database'][:adapter] = 'tinytds'
+      say 'Using tinytds adapter', :cyan
+    else
+      settings['database'][:adapter] = 'sqlite'
+      say 'No database adapter specified', :yellow
+      say 'Using sqlite adapter', :cyan
+    end
+
+    if settings['database'][:adapter] != 'sqlite'
+
+      hostname = ask('Hostname:').strip
+      settings['database'][:host] = hostname.length > 0 ? hostname : 'localhost'
+
+      settings['database'][:user] = ask('Username:').strip
+
+      password = ask('Password:').strip
+      settings['database'][:password] = password if password.length > 0
+
+      settings['database'][:database] = ask('Database:').strip
+
+    else
+
+      settings['database'][:database] = ask('Database:').strip
+
+    end
+
+
+
+    File.open(settings_file, 'w+') {|f| f.write settings.to_yaml }
+    say 'Settings file saved', :green
+
+    say 'SETUP COMPLETE', :green
 
   end
 
