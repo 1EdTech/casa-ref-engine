@@ -1,35 +1,17 @@
-require 'sinatra/base'
+require 'casa-engine/app'
 
 module CASA
   module Engine
-    class Router < Sinatra::Base
-
-      @@apps = []
+    class Router
 
       def self.add app
-        @@apps.push app
+        app['routes'].each do |route|
+          CASA::Engine::App.send(route['method'], route['path']){ app['class'].call(env) }
+        end
       end
 
       def self.reset!
-        @@apps = []
-        reset_routes!
-      end
-
-      def self.set_routes!
-        @@apps.each do |app|
-          app['routes'].each do |route|
-            send(route['method'], route['path']){ app['class'].call(env) }
-          end
-        end
-        self
-      end
-
-      def self.reset_routes!
-        @routes = {}
-      end
-
-      def self.execute!
-        set_routes!
+        CASA::Engine::App.reset_routes!
       end
 
     end

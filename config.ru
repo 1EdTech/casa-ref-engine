@@ -9,8 +9,9 @@ fail "Settings file not defined -- run `thor engine:setup`" unless File.exists? 
 
 settings = YAML::load File.read settings_file
 
+# Loads each module into CASA::Engine::Router
 settings['modules'].each do |mod|
-  require "casa-engine/#{mod}"
+  require "casa-engine/module/#{mod}"
 end
 
-run CASA::Engine::Router.execute!
+run CASA::Engine::App
