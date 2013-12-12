@@ -1,5 +1,7 @@
 # CASA Engine
 
+[![Build Status](https://travis-ci.org/AppSharing/casa-engine.png)](https://travis-ci.org/AppSharing/casa-engine) [![Dependency Status](https://gemnasium.com/AppSharing/casa-engine.png)](https://gemnasium.com/AppSharing/casa-engine) [![Code Climate](https://codeclimate.com/github/AppSharing/casa-engine.png)](https://codeclimate.com/github/AppSharing/casa-engine)
+
 ## Setup
 
 ### Gems
