@@ -7,6 +7,25 @@ class Engine < Thor
 
   def setup
 
+    settings_file = get_settings_file
+
+    @settings = {
+        'modules' => [],
+        'database' => {}
+    }
+
+    setup_modules
+    setup_database
+    save_settings! settings_file
+
+    say 'SETUP COMPLETE', :green
+
+  end
+
+  private
+
+  def get_settings_file
+
     settings_file = Pathname.new(__FILE__).parent + 'settings.yml'
 
     if File.exists? settings_file
@@ -15,64 +34,76 @@ class Engine < Thor
         File.delete settings_file
         say 'Settings file deleted', :green
       else
-        return say 'SETUP ABORTED -- settings.yml already exists', :red
+        say 'SETUP ABORTED -- settings.yml already exists', :red
+        abort
       end
     end
 
-    settings = {
-        'modules' => [],
-        'database' => {}
-    }
+    settings_file
+
+  end
+
+  def setup_modules
 
     say 'SETUP MODULES', :magenta
 
     ['publisher'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
-        settings['modules'].push mod
+        @settings['modules'].push mod
         say "Including #{mod} module", :cyan
       else
         say "Not including #{mod} module", :cyan
       end
     end
 
+  end
+
+  def setup_database
+
+    setup_database_type
+
+    if @settings['database'][:adapter] != 'sqlite'
+
+      hostname = ask('Hostname:').strip
+      @settings['database'][:host] = hostname.length > 0 ? hostname : 'localhost'
+
+      @settings['database'][:user] = ask('Username:').strip
+
+      password = ask('Password:').strip
+      @settings['database'][:password] = password if password.length > 0
+
+      @settings['database'][:database] = ask('Database:').strip
+
+    else
+
+      @settings['database'][:database] = ask('Database:').strip
+
+    end
+
+  end
+
+  def setup_database_type
+
     say 'SETUP DATABASE', :magenta
 
     if yes? "Use mysql ('y' to use)?"
-      settings['database'][:adapter] = 'mysql2'
+      @settings['database'][:adapter] = 'mysql2'
       say 'Using mysql2 adapter', :cyan
     elsif yes? "Use mssql ('y' to use)?"
-      settings['database'][:adapter] = 'tinytds'
+      @settings['database'][:adapter] = 'tinytds'
       say 'Using tinytds adapter', :cyan
     else
-      settings['database'][:adapter] = 'sqlite'
+      @settings['database'][:adapter] = 'sqlite'
       say 'No database adapter specified', :yellow
       say 'Using sqlite adapter', :cyan
     end
 
-    if settings['database'][:adapter] != 'sqlite'
+  end
 
-      hostname = ask('Hostname:').strip
-      settings['database'][:host] = hostname.length > 0 ? hostname : 'localhost'
+  def save_settings! settings_file
 
-      settings['database'][:user] = ask('Username:').strip
-
-      password = ask('Password:').strip
-      settings['database'][:password] = password if password.length > 0
-
-      settings['database'][:database] = ask('Database:').strip
-
-    else
-
-      settings['database'][:database] = ask('Database:').strip
-
-    end
-
-
-
-    File.open(settings_file, 'w+') {|f| f.write settings.to_yaml }
+    File.open(settings_file, 'w+') {|f| f.write @settings.to_yaml }
     say 'Settings file saved', :green
-
-    say 'SETUP COMPLETE', :green
 
   end
 
