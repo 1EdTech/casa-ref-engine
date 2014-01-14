@@ -1,5 +1,6 @@
 require 'pathname'
 require 'json'
+require 'sequel'
 require 'casa-engine'
 
 
