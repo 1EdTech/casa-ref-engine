@@ -55,37 +55,19 @@ module CASA
 
                 logger.info(peer[:uri]) { "Processed #{strategy.processed_payloads.length} payloads" }
 
-              # FATAL Configuration Issues
+              rescue CASA::Attribute::LoaderAttributeError,
+                     CASA::Attribute::LoaderFileError,
+                     CASA::Attribute::LoaderClassError,
+                     CASA::Receiver::ReceiveIn::RequestError => e
 
-              rescue CASA::Attribute::LoaderAttributeError =>e
-                logger.fatal('Engine') { "All attributes must define name and class\nPlease resolve issues in attribute configuration" }
-                  raise e
+                logger.fatal('Engine') { e.message }
 
-              rescue CASA::Attribute::LoaderFileError => e
-                logger.fatal('Engine') { "Attribute class '#{e.class_name}' requires the load path `#{e.require_path}`\nPlease add a gem to `Gemfile` that defines this load path" }
-                raise e
+              rescue CASA::Receiver::ReceiveIn::ResponseError,
+                     CASA::Receiver::ReceiveIn::BodyStructureError,
+                     CASA::Receiver::ReceiveIn::BodyParserError,
+                     StandardError => e
 
-              rescue CASA::Attribute::LoaderClassError => e
-                logger.fatal('Engine') { "Load path '#{e.require_path}' does not define expected class `#{e.class_name}`\nPlease resolve this error by fixing the class to load path mapping" }
-                raise e
-
-              # ERROR Request Issues
-
-              rescue CASA::Receiver::ReceiveIn::RequestError => e
-                logger.error('Engine') { "Request error: #{e.message}" }
-
-              # ERROR Response Issues
-
-              rescue CASA::Receiver::ReceiveIn::ResponseError => e
-                logger.error(peer[:uri]) { "Response error: #{e.http_code}" }
-
-              rescue CASA::Receiver::ReceiveIn::BodyStructureError,
-                     CASA::Receiver::ReceiveIn::BodyParserError
-                logger.error(peer[:uri]) { "Invalid response" }
-
-              rescue StandardError => e
-                logger.error(peer[:uri]) { "Response error: #{e}" }
-
+                logger.error(peer[:uri]) { e.message }
 
               end
 
