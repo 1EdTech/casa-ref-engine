@@ -1,9 +1,9 @@
 require 'pathname'
-require 'yaml'
+require 'json'
 
 class Engine < Thor
 
-  desc 'setup', 'Installation process defining settings.yml'
+  desc 'setup', 'Installation process defining settings/engine.json'
 
   def setup
 
@@ -26,15 +26,15 @@ class Engine < Thor
 
   def get_settings_file
 
-    settings_file = Pathname.new(__FILE__).parent + 'settings.yml'
+    settings_file = Pathname.new(__FILE__).parent + 'settings/engine.json'
 
     if File.exists? settings_file
-      say 'Found settings.yml -- engine is already set up', :green
+      say 'Found settings/engine.json -- engine is already set up', :green
       if yes? "Would you like to overwrite ('y' to overwrite)?"
         File.delete settings_file
         say 'Settings file deleted', :green
       else
-        say 'SETUP ABORTED -- settings.yml already exists', :red
+        say 'SETUP ABORTED -- settings/engine.json already exists', :red
         abort
       end
     end
@@ -47,7 +47,7 @@ class Engine < Thor
 
     say 'SETUP MODULES', :magenta
 
-    ['publisher'].each do |mod|
+    ['publisher','receiver'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
         @settings['modules'].push mod
         say "Including #{mod} module", :cyan
@@ -102,7 +102,7 @@ class Engine < Thor
 
   def save_settings! settings_file
 
-    File.open(settings_file, 'w+') {|f| f.write @settings.to_yaml }
+    File.open(settings_file, 'w+') {|f| f.write @settings.to_json }
     say 'Settings file saved', :green
 
   end

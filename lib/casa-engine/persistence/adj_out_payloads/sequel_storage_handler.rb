@@ -5,7 +5,7 @@ require 'casa-payload'
 module CASA
   module Engine
     module Persistence
-      module AdjOutStore
+      module AdjOutPayloads
         class SequelStorageHandler
 
           def initialize options = nil
@@ -29,7 +29,7 @@ module CASA
             DB[:adj_out_payloads].insert({
               :id => payload['identity']['id'],
               :originator_id => payload['identity']['originator_id'],
-              :data => payload.to_hash
+              :data => payload.to_json
             })
 
           end

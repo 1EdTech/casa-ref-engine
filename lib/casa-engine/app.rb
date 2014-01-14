@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'rufus-scheduler'
 
 module CASA
   module Engine
