@@ -2,14 +2,5 @@
   "name": "title",
   "class": "CASA::Attribute::Title",
   "options": {
-    "transform": [
-      {
-        "method": "identity_map",
-        "identity_map": {
-          "1f262086-615f-11e3-bf13-d231feb1dc81:ex2": "Sample Application 2 (transformed)",
-          "1f262087-615f-11e3-bf13-d231feb1dc81:prop1": "Sample Application 3 (propagated) (transformed)"
-        }
-      }
-    ]
   }
 }

@@ -1,12 +1,12 @@
 require 'rufus-scheduler'
-require 'casa-attribute/loader_attribute_error'
-require 'casa-attribute/loader_class_error'
-require 'casa-attribute/loader_file_error'
-require 'casa-receiver/strategy/client'
-require 'casa-receiver/receive_in/body_parser_error'
-require 'casa-receiver/receive_in/body_structure_error'
-require 'casa-receiver/receive_in/request_error'
-require 'casa-receiver/receive_in/response_error'
+require 'casa/attribute/loader_attribute_error'
+require 'casa/attribute/loader_class_error'
+require 'casa/attribute/loader_file_error'
+require 'casa/receiver/strategy/client'
+require 'casa/receiver/receive_in/body_parser_error'
+require 'casa/receiver/receive_in/body_structure_error'
+require 'casa/receiver/receive_in/request_error'
+require 'casa/receiver/receive_in/response_error'
 
 module CASA
   module Engine

@@ -1,4 +1,4 @@
-require 'casa-engine/app'
+require 'casa/engine/app'
 
 module CASA
   module Engine

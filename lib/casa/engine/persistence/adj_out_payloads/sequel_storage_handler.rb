@@ -1,4 +1,4 @@
-require 'casa-payload/transit_payload'
+require 'casa/payload/transit_payload'
 
 module CASA
   module Engine

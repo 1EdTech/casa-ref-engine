@@ -1,4 +1,4 @@
-require 'casa-payload/local_payload'
+require 'casa/payload/local_payload'
 
 module CASA
   module Engine

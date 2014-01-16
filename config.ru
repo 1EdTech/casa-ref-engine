@@ -1,7 +1,7 @@
 require 'pathname'
 require 'json'
 require 'sequel'
-require 'casa-engine'
+require 'casa/engine'
 
 
 
@@ -54,7 +54,7 @@ DB = Sequel.connect settings['database'].inject({}){|memo,(k,v)| memo[k.to_sym] 
 # # # # # # # # # # # # # # # # # # # #
 
 settings['modules'].each do |mod|
-  require "casa-engine/module/#{mod}"
+  require "casa/engine/module/#{mod}"
 end
 
 

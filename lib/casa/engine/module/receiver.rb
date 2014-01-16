@@ -1,10 +1,10 @@
 require 'logger'
 require 'pathname'
-require 'casa-engine/app'
-require 'casa-engine/job/receive_in'
-require 'casa-engine/attribute/loader'
-require 'casa-engine/persistence/adj_in_peers/sequel_storage_handler'
-require 'casa-engine/persistence/adj_in_payloads/sequel_storage_handler'
+require 'casa/engine/app'
+require 'casa/engine/job/receive_in'
+require 'casa/engine/attribute/loader'
+require 'casa/engine/persistence/adj_in_peers/sequel_storage_handler'
+require 'casa/engine/persistence/adj_in_payloads/sequel_storage_handler'
 
 module CASA
   module Engine
@@ -12,7 +12,7 @@ module CASA
 
       configure do
 
-        base_dir = Pathname.new(__FILE__).parent.parent.parent.parent
+        base_dir = Pathname.new(__FILE__).parent.parent.parent.parent.parent
 
         logger = ::Logger.new STDOUT
         logger.level = ::Logger::DEBUG

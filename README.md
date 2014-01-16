@@ -20,10 +20,10 @@ To install using the `mysql2` adapter only:
 bundle --without mssql sqlite
 ```
 
-To install using the `mysql2` adapter only:
+To install using the `mssql` adapter only:
 
 ```
-bundle --without mssql sqlite
+bundle --without mysql2 sqlite
 ```
 
 To install using the `sqllite` adapter only:

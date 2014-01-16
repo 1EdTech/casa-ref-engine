@@ -1,4 +1,4 @@
-require 'casa-publisher/app'
+require 'casa/publisher/app'
 
 module CASA
   module Engine
