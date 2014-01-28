@@ -50,7 +50,7 @@ module CASA
 
           return if started?
 
-          create_scheduler.every interval, :overlap => false do
+          create_scheduler.every interval, :overlap => false, :tag => 'relay-load_from_adj_in' do
             CASA::Relay::Strategy::LoadFromAdjIn.new(relay_options).execute!
           end
 
