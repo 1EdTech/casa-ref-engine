@@ -45,7 +45,7 @@ module CASA
 
           @scheduler = create_scheduler
 
-          @scheduler.every(interval) do
+          @scheduler.every interval, :overlap => false do
             adj_in_peers_handler.get_all.each do |peer|
 
               begin
