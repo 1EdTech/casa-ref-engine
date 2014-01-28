@@ -5,6 +5,7 @@ group :development do
   gem 'casa-support', :git => 'git://github.com/AppSharing/casa-support.git'
   gem 'casa-publisher', :git => 'git://github.com/AppSharing/casa-publisher.git'
   gem 'casa-receiver', :git => 'git://github.com/AppSharing/casa-receiver.git'
+  gem 'casa-relay', :git => 'git://github.com/AppSharing/casa-relay.git'
   gem 'casa-operation', :git => 'git://github.com/AppSharing/casa-operation.git'
   gem 'casa-operation-filter', :git => 'git://github.com/AppSharing/casa-operation-filter.git'
   gem 'casa-operation-squash', :git => 'git://github.com/AppSharing/casa-operation-squash.git'

@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'casa-publisher'
   s.add_dependency 'casa-attribute'
   s.add_dependency 'casa-receiver'
+  s.add_dependency 'casa-relay'
   s.add_dependency 'thor'
   s.add_dependency 'rufus-scheduler'
 

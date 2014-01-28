@@ -9,7 +9,6 @@ module CASA
         attr_reader :interval
         attr_reader :adj_out_payloads_handler
         attr_reader :adj_in_payloads_handler
-        attr_reader :attributes
         attr_reader :logger
 
         def initialize options
@@ -17,7 +16,6 @@ module CASA
           @interval = options['interval']
           @adj_out_payloads_handler = options['adj_out_payloads_handler']
           @adj_in_payloads_handler = options['adj_in_payloads_handler']
-          @attributes = options['attributes']
           @logger = options['logger']
           @scheduler = nil
 
@@ -34,7 +32,6 @@ module CASA
                 'handler' => adj_in_payloads_handler
               }
             },
-            'attributes' => attributes,
             'logger' => logger
           }
 

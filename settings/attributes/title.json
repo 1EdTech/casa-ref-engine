@@ -2,5 +2,15 @@
   "name": "title",
   "class": "CASA::Attribute::Title",
   "options": {
+    "in_filter": {
+      "blacklist": [
+      ]
+    },
+    "out_transform": {
+    },
+    "out_filter": {
+      "blacklist": [
+      ]
+    }
   }
 }

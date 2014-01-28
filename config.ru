@@ -3,6 +3,8 @@ require 'json'
 require 'sequel'
 require 'casa/engine'
 
+base_path = Pathname.new(__FILE__).parent
+
 
 
 # # # # # # # # # # # # # # # # # # # #
@@ -11,7 +13,6 @@ require 'casa/engine'
 #
 # # # # # # # # # # # # # # # # # # # #
 
-base_path = Pathname.new(__FILE__).parent
 settings_file = base_path + "settings/engine.json"
 
 unless File.exists? settings_file
@@ -44,6 +45,18 @@ end
 
 # Setup the database under the DB variable
 DB = Sequel.connect settings['database'].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+
+
+
+# # # # # # # # # # # # # # # # # # # #
+#
+#   ATTRIBUTES
+#
+# # # # # # # # # # # # # # # # # # # #
+
+CASA::Engine::Attribute::Loader.new(base_path + 'settings' + 'attributes').definitions.each do |attribute|
+  CASA::Attribute::Loader.load! attribute
+end
 
 
 

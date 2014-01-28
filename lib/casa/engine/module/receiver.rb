@@ -23,7 +23,6 @@ module CASA
           'interval' => '2s',
           'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
           'adj_in_peers_handler' => CASA::Engine::Persistence::AdjInPeers::SequelStorageHandler.new,
-          'attributes' => CASA::Engine::Attribute::Loader.new(base_dir + 'settings' + 'attributes').definitions,
           'logger' => CASA::Support::ScopedLogger.new('ReceiveIn', logger)
         })
 

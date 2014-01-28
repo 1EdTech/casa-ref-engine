@@ -27,7 +27,6 @@ module CASA
             'persistence' => {
               'handler' => adj_in_payloads_handler
             },
-            'attributes' => attributes,
             'logger' => logger
           }
 
