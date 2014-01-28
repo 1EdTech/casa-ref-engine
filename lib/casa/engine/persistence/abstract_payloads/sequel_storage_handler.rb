@@ -39,6 +39,8 @@ module CASA
 
           def create payload_hash, options = nil
 
+            payload_hash = payload_hash.to_hash
+
             begin
               @options[:schema_class].new(payload_hash).validate! if @options.has_key? :schema_class
               db[table].insert(

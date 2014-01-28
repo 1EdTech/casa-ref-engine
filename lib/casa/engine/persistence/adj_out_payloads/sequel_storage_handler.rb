@@ -9,7 +9,7 @@ module CASA
           def initialize options = nil
 
             super :adj_out_payloads, merged_options(options, {
-              :schema_class => ::CASA::Payload::TransitPayload
+              :schema_class => ::CASA::Payload::LocalPayload
             })
 
           end

@@ -47,7 +47,7 @@ class Engine < Thor
 
     say 'SETUP MODULES', :magenta
 
-    ['publisher','receiver'].each do |mod|
+    ['publisher','receiver','relay'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
         @settings['modules'].push mod
         say "Including #{mod} module", :cyan
