@@ -1,32 +1,19 @@
-require 'logger'
-require 'pathname'
 require 'casa/engine/app'
-require 'casa/engine/job/relay'
+require 'casa/engine/app/configure_job'
+require 'casa/engine/job/load_from_adj_in_store'
 require 'casa/engine/persistence/adj_in_payloads/sequel_storage_handler'
 require 'casa/engine/persistence/adj_out_payloads/sequel_storage_handler'
+require 'casa/receiver/strategy/adj_out_transform'
 
 module CASA
   module Engine
     class App
 
-      configure do
-
-        logger = ::Logger.new STDOUT
-        logger.level = ::Logger::DEBUG
-        logger.datetime_format = '%Y-%m-%d %H:%M:%S'
-
-        relay = CASA::Engine::Job::Relay.new({
-          'interval' => settings.relay_module['interval'],
-          'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
-          'adj_out_payloads_handler' => CASA::Engine::Persistence::AdjOutPayloads::SequelStorageHandler.new,
-          'logger' => logger
-        })
-
-        set :relay, relay
-
-        relay.start!
-
-      end
+      configure_job :adj_in_to_adj_out, CASA::Engine::Job::LoadFromAdjInStore,
+        'interval' => settings.jobs['intervals']['adj_in_to_adj_out'],
+        'from_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
+        'to_handler' => CASA::Engine::Persistence::AdjOutPayloads::SequelStorageHandler.new,
+        'transform_handler' => CASA::Receiver::Strategy::AdjOutTransform.factory(settings.attributes)
 
     end
   end

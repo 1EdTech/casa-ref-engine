@@ -48,7 +48,7 @@ class Engine < Thor
 
     say_section_title 'SETUP MODULES'
 
-    ['publisher','receiver','relay'].each do |mod|
+    ['publisher','receiver','relay','local'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
         @settings['modules'].push mod
         say "Including #{mod} module", :cyan
@@ -123,23 +123,32 @@ class Engine < Thor
 
   def configure_receiver_module
 
-    @settings['receiver_module'] = {}
     say_section_title 'CONFIGURE RECEIVER MODULE'
-    configure_module_interval 'receiver'
+    configure_job_interval 'receive_in', 'ReceiveIn'
 
   end
 
   def configure_relay_module
 
-    @settings['relay_module'] = {}
     say_section_title 'CONFIGURE RELAY MODULE'
-    configure_module_interval 'relay'
+    configure_job_interval 'adj_in_to_adj_out', 'AdjInToAdjOut'
 
   end
 
-  def configure_module_interval name
-    refresh = ask('Refresh interval (such as "30s", "10m", "2h" or "1d"; blank for default) :').strip
-    @settings["#{name}_module"]['interval'] = refresh if refresh.length > 0
+  def configure_local_module
+
+    say_section_title 'CONFIGURE LOCAL MODULE'
+    configure_job_interval 'adj_in_to_local', 'AdjInToLocal'
+    configure_job_interval 'local_to_adj_out', 'LocalToAdjOut'
+
+  end
+
+  def configure_job_interval name, title
+
+    @settings['jobs'] = {'intervals'=>{}} unless @settings.has_key?('jobs')
+    interval = ask("Refresh interval for #{title} (such as '30s', '10m', '2h' or '1d'):").strip
+    @settings['jobs']['intervals'][name] = interval if interval.length > 0
+
   end
 
   def say_section_title text
