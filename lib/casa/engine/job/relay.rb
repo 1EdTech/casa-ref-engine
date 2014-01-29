@@ -47,13 +47,20 @@ module CASA
 
           return if started?
 
-          create_scheduler.every interval, :overlap => false, :tag => 'relay-load_from_adj_in' do
+          schedule_and_start 'relay-load_from_adj_in' do
             CASA::Relay::Strategy::LoadFromAdjIn.new(relay_options).execute!
           end
 
         end
 
-        def create_scheduler
+        def schedule_and_start tag, &block
+
+          scheduler.every interval, {:overlap => false, :tag => tag}, &block
+          scheduler.jobs(:tag => tag).each { |job| job.trigger Time.now }
+
+        end
+
+        def scheduler
 
           @scheduler ||= Rufus::Scheduler.new
 

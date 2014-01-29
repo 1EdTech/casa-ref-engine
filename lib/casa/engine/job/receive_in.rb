@@ -42,9 +42,8 @@ module CASA
 
           return if started?
 
-          @scheduler = create_scheduler
+          schedule_and_start 'receiver-receive_in' do
 
-          @scheduler.every interval, :overlap => false, :tag => 'receiver-receive_in' do
             adj_in_peers_handler.get_all.each do |peer|
 
               begin
@@ -71,13 +70,21 @@ module CASA
               end
 
             end
+
           end
 
         end
 
-        def create_scheduler
+        def schedule_and_start tag, &block
 
-          Rufus::Scheduler.new
+          scheduler.every interval, {:overlap => false, :tag => tag}, &block
+          scheduler.jobs(:tag => tag).each { |job| job.trigger Time.now }
+
+        end
+
+        def scheduler
+
+          @scheduler ||= Rufus::Scheduler.new
 
         end
 
