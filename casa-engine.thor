@@ -46,7 +46,7 @@ class Engine < Thor
 
   def setup_modules
 
-    say 'SETUP MODULES', :magenta
+    say_section_title 'SETUP MODULES'
 
     ['publisher','receiver','relay'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
@@ -61,31 +61,39 @@ class Engine < Thor
 
   def setup_database
 
+    say_section_title 'SETUP DATABASE'
+
     setup_database_type
 
     if @settings['database'][:adapter] != 'sqlite'
-
-      hostname = ask('Hostname:').strip
-      @settings['database'][:host] = hostname.length > 0 ? hostname : 'localhost'
-
-      @settings['database'][:user] = ask('Username:').strip
-
-      password = ask('Password:').strip
-      @settings['database'][:password] = password if password.length > 0
-
-      @settings['database'][:database] = ask('Database:').strip
-
+      setup_database_connection
     else
-
-      @settings['database'][:database] = ask('Database:').strip
-
+      setup_database_sqlite
     end
 
   end
 
-  def setup_database_type
+  def setup_database_connection
 
-    say 'SETUP DATABASE', :magenta
+    hostname = ask('Hostname:').strip
+    @settings['database'][:host] = hostname.length > 0 ? hostname : 'localhost'
+
+    @settings['database'][:user] = ask('Username:').strip
+
+    password = ask('Password:').strip
+    @settings['database'][:password] = password if password.length > 0
+
+    @settings['database'][:database] = ask('Database:').strip
+
+  end
+
+  def setup_database_sqlite
+
+    @settings['database'][:database] = ask('Database:').strip
+
+  end
+
+  def setup_database_type
 
     if yes? "Use mysql ('y' to use)?"
       @settings['database'][:adapter] = 'mysql2'
@@ -103,7 +111,6 @@ class Engine < Thor
 
   def configure_modules
 
-
     @settings['modules'].each do |mod|
       self.send "configure_#{mod}_module".to_sym
     end
@@ -117,23 +124,26 @@ class Engine < Thor
   def configure_receiver_module
 
     @settings['receiver_module'] = {}
-
-    say 'CONFIGURE RECEIVER MODULE', :magenta
-
-    refresh = ask('Refresh interval (such as "30s", "10m", "2h" or "1d"; blank for default) :').strip
-    @settings['receiver_module']['interval'] = refresh if refresh.length > 0
+    say_section_title 'CONFIGURE RECEIVER MODULE'
+    configure_module_interval 'receiver'
 
   end
 
   def configure_relay_module
 
     @settings['relay_module'] = {}
+    say_section_title 'CONFIGURE RELAY MODULE'
+    configure_module_interval 'relay'
 
-    say 'CONFIGURE RELAY MODULE', :magenta
+  end
 
+  def configure_module_interval name
     refresh = ask('Refresh interval (such as "30s", "10m", "2h" or "1d"; blank for default) :').strip
-    @settings['relay_module']['interval'] = refresh if refresh.length > 0
+    @settings["#{name}_module"]['interval'] = refresh if refresh.length > 0
+  end
 
+  def say_section_title text
+    say text, :magenta
   end
 
   def save_settings! settings_file
