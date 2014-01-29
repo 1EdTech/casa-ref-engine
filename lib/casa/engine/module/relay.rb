@@ -16,7 +16,7 @@ module CASA
         logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
         relay = CASA::Engine::Job::Relay.new({
-          'interval' => '2s',
+          'interval' => settings.relay_module['interval'],
           'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
           'adj_out_payloads_handler' => CASA::Engine::Persistence::AdjOutPayloads::SequelStorageHandler.new,
           'logger' => logger

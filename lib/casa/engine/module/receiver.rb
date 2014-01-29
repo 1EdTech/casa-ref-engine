@@ -20,7 +20,7 @@ module CASA
         logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
         receive_in = CASA::Engine::Job::ReceiveIn.new({
-          'interval' => '2s',
+          'interval' => settings.receiver_module['interval'],
           'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
           'adj_in_peers_handler' => CASA::Engine::Persistence::AdjInPeers::SequelStorageHandler.new,
           'logger' => CASA::Support::ScopedLogger.new('ReceiveIn', logger)

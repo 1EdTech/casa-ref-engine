@@ -62,6 +62,17 @@ end
 
 # # # # # # # # # # # # # # # # # # # #
 #
+#   CORE
+#
+# # # # # # # # # # # # # # # # # # # #
+
+require 'casa/engine/app'
+CASA::Engine::App.set settings
+
+
+
+# # # # # # # # # # # # # # # # # # # #
+#
 #   MODULES
 #
 # # # # # # # # # # # # # # # # # # # #

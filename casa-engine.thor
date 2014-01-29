@@ -16,6 +16,7 @@ class Engine < Thor
 
     setup_modules
     setup_database
+    configure_modules
     save_settings! settings_file
 
     say 'SETUP COMPLETE', :green
@@ -97,6 +98,41 @@ class Engine < Thor
       say 'No database adapter specified', :yellow
       say 'Using sqlite adapter', :cyan
     end
+
+  end
+
+  def configure_modules
+
+
+    @settings['modules'].each do |mod|
+      self.send "configure_#{mod}_module".to_sym
+    end
+
+  end
+
+  def configure_publisher_module
+
+  end
+
+  def configure_receiver_module
+
+    @settings['receiver_module'] = {}
+
+    say 'CONFIGURE RECEIVER MODULE', :magenta
+
+    refresh = ask('Refresh interval (such as "30s", "10m", "2h" or "1d"; blank for default) :').strip
+    @settings['receiver_module']['interval'] = refresh if refresh.length > 0
+
+  end
+
+  def configure_relay_module
+
+    @settings['relay_module'] = {}
+
+    say 'CONFIGURE RELAY MODULE', :magenta
+
+    refresh = ask('Refresh interval (such as "30s", "10m", "2h" or "1d"; blank for default) :').strip
+    @settings['relay_module']['interval'] = refresh if refresh.length > 0
 
   end
 
