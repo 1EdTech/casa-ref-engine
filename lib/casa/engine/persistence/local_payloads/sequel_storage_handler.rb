@@ -3,12 +3,12 @@ require 'casa/payload/local_payload'
 module CASA
   module Engine
     module Persistence
-      module AdjOutPayloads
+      module LocalPayloads
         class SequelStorageHandler < ::CASA::Engine::Persistence::AbstractPayloads::SequelStorageHandler
 
           def initialize options = nil
 
-            super :adj_out_payloads, merged_options(options, {
+            super :local_payloads, merged_options(options, {
               :schema_class => ::CASA::Payload::LocalPayload
             })
 

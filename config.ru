@@ -68,6 +68,7 @@ end
 
 require 'casa/engine/app'
 CASA::Engine::App.set settings
+CASA::Engine::App.set :attributes, CASA::Attribute::Loader.loaded
 
 
 

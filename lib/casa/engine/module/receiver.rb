@@ -9,7 +9,7 @@ module CASA
     class App
 
       configure_job :receive_in, CASA::Engine::Job::ReceiveIn,
-        'interval' => settings.receiver_module['interval'],
+        'interval' => settings.jobs['intervals']['receive_in'],
         'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
         'adj_in_peers_handler' => CASA::Engine::Persistence::AdjInPeers::SequelStorageHandler.new
 

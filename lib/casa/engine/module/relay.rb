@@ -1,17 +1,19 @@
 require 'casa/engine/app'
 require 'casa/engine/app/configure_job'
-require 'casa/engine/job/relay'
+require 'casa/engine/job/load_from_adj_in_store'
 require 'casa/engine/persistence/adj_in_payloads/sequel_storage_handler'
 require 'casa/engine/persistence/adj_out_payloads/sequel_storage_handler'
+require 'casa/receiver/strategy/adj_out_transform'
 
 module CASA
   module Engine
     class App
 
-      configure_job :relay, CASA::Engine::Job::Relay,
-        'interval' => settings.relay_module['interval'],
-        'adj_in_payloads_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
-        'adj_out_payloads_handler' => CASA::Engine::Persistence::AdjOutPayloads::SequelStorageHandler.new
+      configure_job :adj_in_to_adj_out, CASA::Engine::Job::LoadFromAdjInStore,
+        'interval' => settings.jobs['intervals']['adj_in_to_adj_out'],
+        'from_handler' => CASA::Engine::Persistence::AdjInPayloads::SequelStorageHandler.new,
+        'to_handler' => CASA::Engine::Persistence::AdjOutPayloads::SequelStorageHandler.new,
+        'transform_handler' => CASA::Receiver::Strategy::AdjOutTransform.factory(settings.attributes)
 
     end
   end
