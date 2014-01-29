@@ -9,17 +9,21 @@ module CASA
 
         def configure_job name, klass, options = {}
 
-          logger = ::Logger.new STDOUT
-          logger.level = ::Logger::DEBUG
-          logger.datetime_format = '%Y-%m-%d %H:%M:%S'
+          configure do
 
-          default_options = {
-            'logger' => CASA::Support::ScopedLogger.new('ReceiveIn', logger)
-          }
+            logger = ::Logger.new STDOUT
+            logger.level = ::Logger::DEBUG
+            logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
-          obj = klass.new default_options.merge options
-          set name, obj
-          obj.start!
+            default_options = {
+              'logger' => CASA::Support::ScopedLogger.new(name.to_s.split('_').select {|w| w.capitalize! || w }.join(''), logger)
+            }
+
+            obj = klass.new default_options.merge options
+            set name, obj
+            obj.start!
+
+          end
 
         end
 

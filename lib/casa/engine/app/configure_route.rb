@@ -9,10 +9,14 @@ module CASA
 
         def configure_route klass, route
 
-          route = [route] unless route.is_a? Array
+          configure do
 
-          route.each do |route|
-            CASA::Engine::App.send(route['method'], route['path']){ klass.call(env) }
+            route = [route] unless route.is_a? Array
+
+            route.each do |route|
+              CASA::Engine::App.send(route['method'], route['path']){ klass.call(env) }
+            end
+
           end
 
         end
