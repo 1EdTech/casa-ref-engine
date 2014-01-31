@@ -72,7 +72,6 @@ module CASA
               begin
                 payloads.push make_payload_from_row row
               rescue Exception => e
-                puts e
                 # do nothing
               end
             end
