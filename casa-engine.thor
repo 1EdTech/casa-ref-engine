@@ -1,5 +1,6 @@
 require 'pathname'
 require 'json'
+require 'securerandom'
 
 class Engine < Thor
 
@@ -14,6 +15,7 @@ class Engine < Thor
         'database' => {}
     }
 
+    setup_engine
     setup_modules
     setup_database
     configure_modules
@@ -41,6 +43,24 @@ class Engine < Thor
     end
 
     settings_file
+
+  end
+
+  def setup_engine
+
+    say_section_title 'SETUP ENGINE'
+
+    until @settings.has_key? 'id'
+      id = ask('UUID (empty for a generated one):').strip
+      if id.length == 0
+        @settings['id'] = SecureRandom.uuid
+        say "Using generated UUID: #{@settings['id']}", :yellow
+      elsif id =~ /\A[\da-f]{8}-([\da-f]{4}-){3}[\da-f]{12}\z/i
+        @settings['id'] = id
+      else
+        say 'Invalid format -- please try again', :red
+      end
+    end
 
   end
 
