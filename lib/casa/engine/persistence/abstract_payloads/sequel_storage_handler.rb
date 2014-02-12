@@ -72,7 +72,8 @@ module CASA
               begin
                 payloads.push make_payload_from_row row
               rescue Exception => e
-                # do nothing
+                # TODO: log this
+                # FORNOW: don't expose an error to end clients so ignore
               end
             end
             payloads
