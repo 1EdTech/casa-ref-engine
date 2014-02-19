@@ -8,7 +8,6 @@ group :development do
   gem 'casa-relay', :git => 'git://github.com/AppSharing/casa-relay.git'
   gem 'casa-operation', :git => 'git://github.com/AppSharing/casa-operation.git'
   gem 'casa-attribute', :git => 'git://github.com/AppSharing/casa-attribute.git'
-  gem 'casa-attribute-title', :git => 'git://github.com/AppSharing/casa-attribute-title.git'
 end
 group(:mysql2){ gem 'mysql2' }
 group(:mssql){ gem 'tiny_tds' }
