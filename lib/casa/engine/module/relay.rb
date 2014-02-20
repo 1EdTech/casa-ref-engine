@@ -1,5 +1,5 @@
 require 'casa/engine/app'
-require 'casa/engine/app/configure_job'
+require 'casa/engine/app/class/configure_job'
 require 'casa/engine/job/load_from_adj_in_store'
 require 'casa/engine/persistence/adj_in_payloads/sequel_storage_handler'
 require 'casa/engine/persistence/adj_out_payloads/sequel_storage_handler'
