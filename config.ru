@@ -82,7 +82,7 @@ settings['modules'].each do |mod|
   require "casa/engine/module/#{mod}"
 end
 
-
+require 'casa/engine/module/admin/engine/routes.rb'
 
 # # # # # # # # # # # # # # # # # # # #
 #

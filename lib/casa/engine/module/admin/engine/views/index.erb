@@ -1,0 +1,81 @@
+<h2>Engine</h2>
+
+<h3>Originator ID</h3>
+
+<p><%= settings.id %></p>
+
+<h3>Modules</h3>
+
+<ul>
+  <% {
+        'publisher' => {
+            :title => 'Publisher',
+            :description => 'Must be enabled to send content to peers'
+        },
+        'receiver' => {
+            :title => 'Receiver',
+            :description => 'Must be enabled to receive content from peers'
+        },
+        'relay' => {
+            :title => 'Relay',
+            :description => 'Must be enabled to propagate content received from peers to other peers'
+        },
+        'local' => {
+            :title => 'Local',
+            :description => 'Must be enabled to share content with outlets'
+        }
+     }.each do |key, mod| %>
+
+  <li>
+    <h4><%= mod[:title] %> <em>[<%= settings.modules.include?(key) ? 'Enabled' : 'Disabled' %>]</em></h4>
+    <p><%= mod[:description] %></p>
+  </li>
+
+  <% end %>
+</ul>
+
+<h3>Database</h3>
+
+<ul>
+  <% settings.database.select(){|field,_| field != 'password'}.each do |field,value| %>
+  <li>
+    <h4><%= field %></h4>
+    <p><%= value %></p>
+  </li>
+  <% end %>
+</ul>
+
+<h3>Jobs</h3>
+
+<ul>
+  <% {
+          'receive_in' => 'Query peers for content',
+          'adj_in_to_adj_out' => 'Process received content for sharing',
+          'adj_in_to_local' => 'Process received content for local use',
+          'local_to_adj_out' =>' Process local content for sharing'
+     }.each do |key,title| %>
+  <% next unless settings.jobs['intervals'].has_key? key %>
+  <li>
+    <h4><%= title %></h4>
+    <p>Recurring job every <%= settings.jobs['intervals'][key] %></p>
+  </li>
+  <% end %>
+</ul>
+
+<h3>Attributes</h3>
+
+<ul>
+  <% settings.attributes.each do |name,attribute| %>
+  <li>
+    <p>
+      <strong>Name:</strong> <%= name %>
+      <br>
+      <strong>UUID:</strong> <%= attribute.uuid %>
+      <br>
+      <strong>Type:</strong> <%= attribute.section %>
+      <br>
+      <strong>Handler:</strong> <%= attribute.class.name %>
+    </p>
+  </li>
+  <% end %>
+</ul>

@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'casa-relay'
   s.add_dependency 'thor'
   s.add_dependency 'rufus-scheduler'
+  s.add_dependency 'erubis'
 
   s.add_development_dependency 'rake'
 
