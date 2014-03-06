@@ -1,7 +1,11 @@
 require 'pathname'
 require 'json'
 require 'sequel'
-require 'casa/engine'
+
+require 'casa/engine/app'
+require 'casa/attribute/loader'
+require 'casa/engine/attribute/loader'
+require 'casa/support/scoped_logger'
 
 base_path = Pathname.new(__FILE__).parent
 
@@ -47,6 +51,18 @@ end
 DB = Sequel.connect settings['database'].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
 
+{
+  'adj_in_payloads' => 'AdjInPayloads',
+  'adj_in_peers' => 'AdjInPeers',
+  'adj_out_payloads' => 'AdjOutPayloads',
+  'local_payloads' => 'LocalPayloads'
+}.each do |key, name|
+  require "casa/engine/persistence/#{key}/sequel_storage_handler"
+  klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
+  CASA::Engine::App.set "#{key}_handler".to_sym, klass.new
+end
+
+
 
 # # # # # # # # # # # # # # # # # # # #
 #
@@ -67,8 +83,15 @@ end
 # # # # # # # # # # # # # # # # # # # #
 
 require 'casa/engine/app'
+
 CASA::Engine::App.set settings
+
 CASA::Engine::App.set :attributes, CASA::Attribute::Loader.loaded
+
+logger = ::Logger.new STDOUT
+logger.level = ::Logger::DEBUG
+logger.datetime_format = '%Y-%m-%d %H:%M:%S'
+CASA::Engine::App.set :logger, CASA::Support::ScopedLogger.new_without_scope(logger)
 
 
 
@@ -78,11 +101,20 @@ CASA::Engine::App.set :attributes, CASA::Attribute::Loader.loaded
 #
 # # # # # # # # # # # # # # # # # # # #
 
-settings['modules'].each do |mod|
-  require "casa/engine/module/#{mod}"
+['configure','routes','start'].each do |type|
+  settings['modules'].each do |mod|
+    begin
+      logger.info "Module - #{mod[0,1].upcase}#{mod[1,mod.size-1]}" do
+        require "casa/engine/module/#{mod}/#{type}"
+        "#{type[0,1].upcase}#{type[1,type.size-1]}"
+      end
+    rescue LoadError
+    end
+  end
 end
 
 require 'casa/engine/module/admin/engine/routes.rb'
+
 
 # # # # # # # # # # # # # # # # # # # #
 #

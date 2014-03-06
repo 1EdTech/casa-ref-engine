@@ -1,3 +1,4 @@
+require 'casa/engine/persistence/abstract_payloads/sequel_storage_handler'
 require 'casa/payload/local_payload'
 
 module CASA

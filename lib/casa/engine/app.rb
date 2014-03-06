@@ -8,6 +8,18 @@ module CASA
 
       register Sinatra::Namespace
 
+      configure do
+
+        scheduler = Rufus::Scheduler.new
+
+        def scheduler.trigger_jobs selector
+          jobs(selector).each { |job| job.trigger Time.now }
+        end
+
+        set :scheduler, scheduler
+
+      end
+
     end
   end
 end

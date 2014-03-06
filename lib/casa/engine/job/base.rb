@@ -1,40 +1,16 @@
-require 'rufus-scheduler'
+require 'delegate'
+require 'casa/support/scoped_logger'
 
 module CASA
   module Engine
     module Job
-      class Base
+      class Base < ::SimpleDelegator
 
-        def initialize options
+        attr_accessor :logger
 
-          @options = options
-          @options.keys.each { |k| self.class.send(:define_method, k.to_sym){ @options[k] } }
-          @scheduler = nil
-
-        end
-
-        def started?
-
-          !@scheduler.nil?
-
-        end
-
-        def start! interval, options = {}, &block
-
-          return if started?
-
-          default_options = {:overlap => false, :tag => self.class.name}
-          schedule_options = default_options.merge(options)
-
-          scheduler.every interval, schedule_options, &block
-          scheduler.jobs(:tag => schedule_options[:tag]).each { |job| job.trigger Time.now }
-
-        end
-
-        def scheduler
-
-          @scheduler ||= Rufus::Scheduler.new
-
+        def initialize context
+          super context
+          @logger = CASA::Support::ScopedLogger.new(self.class.name.split('::').last, __getobj__.settings.logger)
         end
 
       end
