@@ -68,7 +68,7 @@ class Engine < Thor
 
     say_section_title 'SETUP MODULES'
 
-    ['publisher','receiver','relay','local'].each do |mod|
+    ['publisher','receiver','local'].each do |mod|
       if yes? "Include #{mod} module ('y' to include)?"
         @settings['modules'].push mod
         say "Including #{mod} module", :cyan
@@ -145,13 +145,6 @@ class Engine < Thor
 
     say_section_title 'CONFIGURE RECEIVER MODULE'
     configure_job_interval 'receive_in', 'ReceiveIn'
-
-  end
-
-  def configure_relay_module
-
-    say_section_title 'CONFIGURE RELAY MODULE'
-    configure_job_interval 'adj_in_to_adj_out', 'AdjInToAdjOut'
 
   end
 

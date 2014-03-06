@@ -23,10 +23,10 @@ Gem::Specification.new do |s|
   s.add_dependency 'casa-attribute'
   s.add_dependency 'casa-operation'
   s.add_dependency 'casa-receiver'
-  s.add_dependency 'casa-relay'
   s.add_dependency 'thor'
   s.add_dependency 'rufus-scheduler'
   s.add_dependency 'erubis'
+  s.add_dependency 'elasticsearch'
 
   s.add_development_dependency 'rake'
 
