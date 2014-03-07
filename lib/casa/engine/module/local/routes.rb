@@ -10,7 +10,7 @@ module CASA
         get '/payloads' do
 
           options = {
-            'from_handler' => settings.local_payloads_handler,
+            'from_handler' => (settings.local_payloads_index_handler or settings.local_payloads_handler),
             'postprocess_handler' => false
           }
 
