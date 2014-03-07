@@ -1,34 +1,36 @@
-require 'sequel'
+require 'casa/engine/persistence/base/sequel_storage_handler'
 
 module CASA
   module Engine
     module Persistence
       module AdjInPeers
-        class SequelStorageHandler
+        class SequelStorageHandler < CASA::Engine::Persistence::Base::SequelStorageHandler
 
           def initialize options = nil
 
-            fail 'AdjIPeer::SequelStorageHandler requires connection option' unless defined? DB
+            super merged_options(options, {
+              :db_table => :adj_in_peers
+            })
 
-            DB.run 'CREATE TABLE IF NOT EXISTS `adj_in_peers` (
+            db.run "CREATE TABLE IF NOT EXISTS `#{db_table}` (
               `name` varchar(255) NOT NULL,
               `uri` text NOT NULL,
               `secret` varchar(255) DEFAULT NULL,
               PRIMARY KEY (`name`)
-            )'
+            )"
 
           end
 
           def get name, options = nil
 
-            row = DB[:adj_in_peers].where(:name => name).first
+            row = db[db_table].where(:name => name).first
             row ? row : false
 
           end
 
           def get_all options = nil
 
-            DB[:adj_in_peers]
+            db[db_table]
 
           end
 

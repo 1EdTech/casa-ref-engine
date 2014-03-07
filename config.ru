@@ -27,42 +27,6 @@ settings = JSON::parse File.read settings_file
 
 
 
-# # # # # # # # # # # # # # # # # # # #
-#
-#   DATABASE
-#
-# # # # # # # # # # # # # # # # # # # #
-
-# Check to make sure dependencies are installed
-deps = {
-  'mysql2' => ['mysql2'],
-  'tinytds' => ['tiny_tds'],
-  'sqlite' => ['sqlite3']
-}[settings['database']['adapter']].each do |dep|
-  begin
-    require dep
-  rescue LoadError
-    abort "\e[31m\e[1mDatabase adapter '#{settings['database']['adapter']}' requires `#{dep}' gem\e[0m\n\e[31mRun 'bundle install' to resolve (must not '--without #{settings['database']['adapter']}')'"
-  end
-end
-
-
-# Setup the database under the DB variable
-DB = Sequel.connect settings['database'].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-
-
-{
-  'adj_in_payloads' => 'AdjInPayloads',
-  'adj_in_peers' => 'AdjInPeers',
-  'adj_out_payloads' => 'AdjOutPayloads',
-  'local_payloads' => 'LocalPayloads'
-}.each do |key, name|
-  require "casa/engine/persistence/#{key}/sequel_storage_handler"
-  klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
-  CASA::Engine::App.set "#{key}_handler".to_sym, klass.new
-end
-
-
 
 # # # # # # # # # # # # # # # # # # # #
 #
@@ -92,6 +56,74 @@ logger = ::Logger.new STDOUT
 logger.level = ::Logger::DEBUG
 logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 CASA::Engine::App.set :logger, CASA::Support::ScopedLogger.new_without_scope(logger)
+
+
+
+# # # # # # # # # # # # # # # # # # # #
+#
+#   DATABASE
+#
+# # # # # # # # # # # # # # # # # # # #
+
+# Check to make sure dependencies are installed
+deps = {
+  'mysql2' => ['mysql2'],
+  'tinytds' => ['tiny_tds'],
+  'sqlite' => ['sqlite3']
+}[settings['database']['adapter']].each do |dep|
+  begin
+    require dep
+  rescue LoadError
+    abort "\e[31m\e[1mDatabase adapter '#{settings['database']['adapter']}' requires `#{dep}' gem\e[0m\n\e[31mRun 'bundle install' to resolve (must not '--without #{settings['database']['adapter']}')'"
+  end
+end
+
+
+# Setup the database under the DB variable
+sequel_connection = Sequel.connect settings['database'].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+
+{
+  'adj_in_payloads' => 'AdjInPayloads',
+  'adj_in_peers' => 'AdjInPeers',
+  'adj_out_payloads' => 'AdjOutPayloads',
+  'local_payloads' => 'LocalPayloads'
+}.each do |key, name|
+
+  require "casa/engine/persistence/#{key}/sequel_storage_handler"
+  klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
+
+  handler = klass.new({
+    :context => CASA::Engine::App.settings,
+    :db => sequel_connection
+  })
+
+  CASA::Engine::App.set "#{key}_handler".to_sym, handler
+
+end
+
+
+
+# # # # # # # # # # # # # # # # # # # #
+#
+#   INDEX
+#
+# # # # # # # # # # # # # # # # # # # #
+
+require 'elasticsearch'
+elasticsearch_client = Elasticsearch::Client.new 'log' => true
+
+begin
+  require 'casa/engine/persistence/local_payloads/elasticsearch_storage_handler'
+  klass = CASA::Engine::Persistence::LocalPayloads::ElasticsearchStorageHandler
+  handler = klass.new({
+    :context => CASA::Engine::App.settings,
+    :db => elasticsearch_client,
+    :schema_class => false
+  })
+  CASA::Engine::App.settings.local_payloads_handler.index_handler = handler
+rescue
+  logger.warn('Initialize - Index') { 'Could not initialize Elasticsearch - advanced search functions will not be available' }
+end
 
 
 

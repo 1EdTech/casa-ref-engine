@@ -1,26 +1,17 @@
 require 'json'
+require 'casa/engine/persistence/base/sequel_storage_handler'
 
 module CASA
   module Engine
     module Persistence
       module AbstractPayloads
-        class SequelStorageHandler
+        class SequelStorageHandler < CASA::Engine::Persistence::Base::SequelStorageHandler
 
-          attr_accessor :table
-          attr_accessor :options
+          def initialize options = nil
 
-          def initialize table, options = nil
+            super options
 
-            @table = table
-            @options = options ? options : {}
-
-            setup!
-
-          end
-
-          def setup!
-
-            db.run "CREATE TABLE IF NOT EXISTS `#{table}` (
+            db.run "CREATE TABLE IF NOT EXISTS `#{db_table}` (
               `id` varchar(255) NOT NULL,
               `originator_id` varchar(36) NOT NULL,
               `data` text NOT NULL,
@@ -29,28 +20,31 @@ module CASA
 
           end
 
-          def db
-
-            fail 'DB must be defined' unless defined? DB
-            fail 'DB must be defined as a Sequel::Database' unless defined? DB.is_a?(Sequel::Database)
-            DB
-
-          end
-
           def create payload_hash, options = nil
 
             payload_hash = payload_hash.to_hash
 
             begin
-              @options[:schema_class].new(payload_hash).validate! if @options.has_key? :schema_class
-              db[table].insert(
+
+              schema_class.new(payload_hash).validate! if schema_class
+
+              db[db_table].insert(
                 :id => payload_hash['identity']['id'],
                 :originator_id => payload_hash['identity']['originator_id'],
                 :data => payload_hash.to_json
               )
+
+              if use_index_handler?
+                index_handler.create payload_hash
+              end
+
+
               true
+
             rescue
+
               false
+
             end
 
           end
@@ -68,7 +62,7 @@ module CASA
           def get_all options = nil
 
             payloads = []
-            db[table].each do |row|
+            db[db_table].each do |row|
               begin
                 payloads.push make_payload_from_row row
               rescue Exception => e
@@ -88,11 +82,15 @@ module CASA
 
           def reset! options = nil
 
-            db.run "TRUNCATE `#{table}`"
+            db.run "TRUNCATE `#{db_table}`"
 
           end
 
           private
+
+          def use_index_handler?
+            index_handler and index_handler != self
+          end
 
           def payload_data payload_identity, options = nil
 
@@ -102,7 +100,7 @@ module CASA
 
           def make_payload data, options = nil
 
-            @options.has_key?(:schema_class) ? @options[:schema_class].new(data).validate! : data
+            schema_class ? schema_class.new(data).validate! : data
 
           end
 
@@ -120,13 +118,7 @@ module CASA
 
           def row_query_for_identity payload_identity, options = nil
 
-            db[table].where payload_identity.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-
-          end
-
-          def merged_options base_options, options
-
-            (base_options ? base_options : {}).merge(options ? options : {})
+            db[db_table].where payload_identity.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
           end
 
