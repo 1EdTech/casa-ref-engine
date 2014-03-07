@@ -1,5 +1,5 @@
 require 'casa/engine/app'
-require 'casa/publisher/strategy/sinatra'
+require 'casa/publisher/strategy/all/sinatra'
 
 module CASA
   module Engine
@@ -14,7 +14,7 @@ module CASA
             'postprocess_handler' => false
           }
 
-          CASA::Publisher::Strategy::Sinatra.new(self, options).execute
+          CASA::Publisher::Strategy::All::Sinatra.new(self, options).execute
 
         end
 
