@@ -10,20 +10,16 @@ module CASA
 
         if settings.modules.include? 'receiver'
 
-          settings.set :adj_in_to_adj_out_job, CASA::Engine::Job::LoadPayloads::AdjInToAdjOut.new(self)
-
           scheduler.every '24h', {:overlap => false, :tag => :adj_in_to_adj_out} do
-            adj_in_to_adj_out_job.execute
+            CASA::Engine::Job::LoadPayloads::AdjInToAdjOut.new(settings).execute
           end
 
         end
 
         if settings.modules.include? 'local'
 
-          settings.set :local_to_adj_out_job, CASA::Engine::Job::LoadPayloads::LocalToAdjOut.new(self)
-
           scheduler.every '24h', {:overlap => false, :tag => :local_to_adj_out} do
-            local_to_adj_out_job.execute
+            CASA::Engine::Job::LoadPayloads::LocalToAdjOut.new(settings).execute
           end
 
         end

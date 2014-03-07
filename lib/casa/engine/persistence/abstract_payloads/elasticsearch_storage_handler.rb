@@ -10,10 +10,14 @@ module CASA
           def initialize options = nil
 
             super options
+            setup!
+
+          end
+
+          def setup!
 
             unless db.indices.exists index: index
-              db.indices.create index: index,
-                                body: {}
+              db.indices.create index: index, body: {}
             end
 
           end
@@ -90,9 +94,16 @@ module CASA
 
           def reset! options = nil
 
-            db.delete_by_query index: index,
-                               type: type,
-                               body: { match_all: { } }
+            teardown!
+            setup!
+
+          end
+
+          def teardown! options = nil
+
+            if db.indices.exists(index: index) and db.indices.exists_type(index: index, type: type)
+              db.indices.delete_mapping index: index, type: type
+            end
 
           end
 

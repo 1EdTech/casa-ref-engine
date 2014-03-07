@@ -38,7 +38,6 @@ module CASA
                 index_handler.create payload_hash
               end
 
-
               true
 
             rescue
@@ -83,6 +82,12 @@ module CASA
           def reset! options = nil
 
             db.run "TRUNCATE `#{db_table}`"
+
+          end
+
+          def teardown! options = nil
+
+            db.run "DROP TABLE `#{@db_table}`"
 
           end
 

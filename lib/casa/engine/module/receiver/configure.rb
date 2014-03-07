@@ -7,10 +7,8 @@ module CASA
 
       configure do
 
-        settings.set :receiver_job, CASA::Engine::Job::ReceiveIn.new(self)
-
         scheduler.every '5m', {:overlap => false, :tag => :receive_in} do
-          receiver_job.execute
+          CASA::Engine::Job::ReceiveIn.new(settings).execute
           scheduler.trigger_jobs :tag => :adj_in_to_local
           scheduler.trigger_jobs :tag => :adj_in_to_adj_out
         end
