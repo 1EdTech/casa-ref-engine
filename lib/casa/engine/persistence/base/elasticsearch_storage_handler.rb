@@ -8,6 +8,7 @@ module CASA
 
           def initialize options = {}
             super merged_options(options, {
+              :__type__ => 'elasticsearch',
               :index => 'casa'
             })
             require_property! :db

@@ -7,7 +7,9 @@ module CASA
         class SequelStorageHandler < BaseStorageHandler
 
           def initialize options = nil
-            super options
+            super merged_options(options, {
+              :__type__ => 'sequel'
+            })
             require_property! :db
             require_property! :db_table
           end

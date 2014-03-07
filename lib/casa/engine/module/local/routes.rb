@@ -1,6 +1,7 @@
 require 'casa/engine/app'
 require 'casa/publisher/strategy/all/sinatra'
 require 'casa/publisher/strategy/one/sinatra'
+require 'casa/publisher/strategy/search/sinatra'
 
 module CASA
   module Engine
@@ -10,7 +11,7 @@ module CASA
 
         make_options = Proc.new do
           {
-            'from_handler' => (settings.local_payloads_index_handler or settings.local_payloads_handler),
+            'from_handler' => settings.respond_to?(:local_payloads_index_handler) ? settings.local_payloads_index_handler : settings.local_payloads_handler,
             'postprocess_handler' => false
           }
         end
@@ -24,6 +25,12 @@ module CASA
         get '/payloads/:originator_id/:id' do
 
           CASA::Publisher::Strategy::One::Sinatra.new(self, make_options.call).execute
+
+        end
+
+        get '/payloads/_:type' do
+
+          CASA::Publisher::Strategy::Search::Sinatra.new(self, make_options.call).execute
 
         end
 

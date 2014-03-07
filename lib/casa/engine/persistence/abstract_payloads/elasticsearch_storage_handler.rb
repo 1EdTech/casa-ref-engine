@@ -62,15 +62,13 @@ module CASA
 
           end
 
-          def get_all options = nil
+          def get_search search_body, options = nil
 
             payloads = []
 
             response = db.search index: index,
                                  type: type,
-                                 body: {
-                                   query: { match_all: { } }
-                                 }
+                                 body: body
 
             response['hits']['hits'].each do |row|
               begin
@@ -81,6 +79,16 @@ module CASA
               end
             end
             payloads
+
+          end
+
+          def get_all options = nil
+
+            get_search({
+              query: {
+                match_all: { }
+              }
+            })
 
           end
 
