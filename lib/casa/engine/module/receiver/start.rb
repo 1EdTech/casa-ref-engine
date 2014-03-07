@@ -7,7 +7,7 @@ module CASA
 
       configure do
 
-        scheduler.trigger_jobs :tag => :receive_in
+        receive_in_job.execute
 
       end
 

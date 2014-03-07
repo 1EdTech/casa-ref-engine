@@ -8,6 +8,8 @@ module CASA
 
         def execute
 
+          true_if_any_received = false
+
           adj_in_peers_handler.get_all.each do |peer|
 
             begin
@@ -22,6 +24,9 @@ module CASA
                 strategy_options['secret'] = peer[:secret] if peer[:secret]
 
                 CASA::Receiver::Strategy::Client.new(peer[:uri], strategy_options).execute!
+
+                true_if_any_received = true
+
                 "Received payloads"
 
               end
@@ -43,6 +48,8 @@ module CASA
             end
 
           end
+
+          true_if_any_received
 
         end
 

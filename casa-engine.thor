@@ -139,6 +139,11 @@ class Engine < Thor
 
   def configure_publisher_module
 
+    say_section_title 'CONFIGURE PUBLISHER MODULE'
+    configure_job_interval 'local_to_adj_out', 'LocalToAdjOut'
+    configure_job_interval 'adj_in_to_adj_out', 'AdjInToAdjOut'
+
+
   end
 
   def configure_receiver_module
@@ -152,7 +157,7 @@ class Engine < Thor
 
     say_section_title 'CONFIGURE LOCAL MODULE'
     configure_job_interval 'adj_in_to_local', 'AdjInToLocal'
-    configure_job_interval 'local_to_adj_out', 'LocalToAdjOut'
+    configure_job_interval 'local_index_rebuild', 'RebuildLocalIndex'
 
   end
 

@@ -1,6 +1,7 @@
 require 'casa/engine/app'
 require 'casa/engine/job/load_payloads/adj_in_to_local'
 require 'casa/engine/job/load_payloads/rebuild_local_index'
+require 'casa/engine/support/scheduled_job'
 
 module CASA
   module Engine
@@ -8,13 +9,13 @@ module CASA
 
       configure do
 
-        scheduler.every '24h', {:overlap => false, :tag => :rebuild_local_index} do
+        settings.set(:rebuild_local_index_job, CASA::Engine::Support::ScheduledJob.new(:every, settings.jobs['intervals']['local_index_rebuild']) do
           CASA::Engine::Job::LoadPayloads::RebuildLocalIndex.new(settings).execute
-        end
+        end)
 
         if settings.modules.include? 'receiver'
 
-          scheduler.every '24h', {:overlap => false, :tag => :adj_in_to_local} do
+          settings.set(:adj_in_to_local_job, CASA::Engine::Support::ScheduledJob.new(:every, settings.jobs['intervals']['adj_in_to_local']) do
 
             CASA::Engine::Job::LoadPayloads::AdjInToLocal.new(settings).execute
 
@@ -22,13 +23,13 @@ module CASA
             if local_payloads_index_handler
               unless local_payloads_handler == local_payloads_index_handler or local_payloads_handler.index_handler
                 local_payloads_handler.index_handler = local_payloads_index_handler
-                scheduler.trigger_jobs :tag => :rebuild_local_index
+                rebuild_local_index_job.execute if rebuild_local_index_job
               end
             end
 
-            scheduler.trigger_jobs :tag => :local_to_adj_out
+            local_to_adj_out_job.execute if local_to_adj_out_job
 
-          end
+          end)
 
         end
 
