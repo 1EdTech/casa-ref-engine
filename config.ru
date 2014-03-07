@@ -120,7 +120,7 @@ begin
     :db => elasticsearch_client,
     :schema_class => false
   })
-  CASA::Engine::App.settings.local_payloads_handler.index_handler = handler
+  CASA::Engine::App.set :local_payloads_index_handler, handler
 rescue
   logger.warn('Initialize - Index') { 'Could not initialize Elasticsearch - advanced search functions will not be available' }
 end

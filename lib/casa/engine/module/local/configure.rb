@@ -15,9 +15,19 @@ module CASA
         if settings.modules.include? 'receiver'
 
           scheduler.every '24h', {:overlap => false, :tag => :adj_in_to_local} do
+
             CASA::Engine::Job::LoadPayloads::AdjInToLocal.new(settings).execute
-            scheduler.trigger_jobs :tag => :rebuild_local_index
+
+            # if an index handler exists and it's not already attached to local payloads handler, go ahead and
+            if local_payloads_index_handler
+              unless local_payloads_handler == local_payloads_index_handler or local_payloads_handler.index_handler
+                local_payloads_handler.index_handler = local_payloads_index_handler
+                scheduler.trigger_jobs :tag => :rebuild_local_index
+              end
+            end
+
             scheduler.trigger_jobs :tag => :local_to_adj_out
+
           end
 
         end
