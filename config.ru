@@ -135,12 +135,11 @@ end
 
 ['configure','routes','start'].each do |type|
   settings['modules'].each do |mod|
-    begin
+    if File.exists? Pathname.new(__FILE__).parent + "lib/casa/engine/module/#{mod}/#{type}.rb"
       logger.info "Module - #{mod[0,1].upcase}#{mod[1,mod.size-1]}" do
         require "casa/engine/module/#{mod}/#{type}"
         "#{type[0,1].upcase}#{type[1,type.size-1]}"
       end
-    rescue LoadError
     end
   end
 end
