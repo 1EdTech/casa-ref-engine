@@ -1,5 +1,5 @@
 require 'casa/engine/app'
-require 'casa/publisher/strategy/sinatra'
+require 'casa/publisher/strategy/all/sinatra'
 require 'casa/engine/job/send_out_prepare_payload'
 
 module CASA
@@ -17,7 +17,7 @@ module CASA
             'postprocess_handler' => CASA::Engine::Job::SendOutPreparePayload.new(app_settings)
           }
 
-          CASA::Publisher::Strategy::Sinatra.new(self, options).execute
+          CASA::Publisher::Strategy::All::Sinatra.new(self, options).execute
 
         end
 
