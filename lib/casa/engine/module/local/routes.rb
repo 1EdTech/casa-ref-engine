@@ -1,6 +1,7 @@
 require 'casa/engine/app'
 require 'casa/publisher/strategy/all/sinatra'
 require 'casa/publisher/strategy/one/sinatra'
+require 'casa/publisher/strategy/query/sinatra'
 require 'casa/publisher/strategy/search/sinatra'
 
 module CASA
@@ -27,7 +28,12 @@ module CASA
         get '/payloads' do
 
           headers allow_cors
-          CASA::Publisher::Strategy::All::Sinatra.new(self, make_options.call).execute
+
+          unless params[:query]
+            CASA::Publisher::Strategy::All::Sinatra.new(self, make_options.call).execute
+          else
+            CASA::Publisher::Strategy::Query::Sinatra.new(self, make_options.call).execute
+          end
 
         end
 

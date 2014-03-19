@@ -62,14 +62,25 @@ module CASA
 
           end
 
+          def get_query query_string, options = nil
+
+            make_payloads_from db.search index: index,
+                                         type: type,
+                                         q: query_string
+
+          end
+
           def get_search search_body, options = nil
 
+            make_payloads_from db.search index: index,
+                                         type: type,
+                                         body: search_body
+
+          end
+
+          def make_payloads_from response
+
             payloads = []
-
-            response = db.search index: index,
-                                 type: type,
-                                 body: body
-
             response['hits']['hits'].each do |row|
               begin
                 payloads.push make_payload row['_source']
