@@ -16,21 +16,38 @@ module CASA
           }
         end
 
+        # TODO: Refactor with more elegant CORS support
+
+        allow_cors = {
+          "Access-Control-Allow-Origin" => "*",
+          "Access-Control-Allow-Methods" => "GET,POST",
+          "Access-Control-Allow-Headers" => "Origin, X-Requested-With, Content-Type, Accept"
+        }
+
         get '/payloads' do
 
+          headers allow_cors
           CASA::Publisher::Strategy::All::Sinatra.new(self, make_options.call).execute
 
         end
 
         get '/payloads/:originator_id/:id' do
 
+          headers allow_cors
           CASA::Publisher::Strategy::One::Sinatra.new(self, make_options.call).execute
 
         end
 
         get '/payloads/_:type' do
 
+          headers allow_cors
           CASA::Publisher::Strategy::Search::Sinatra.new(self, make_options.call).execute
+
+        end
+
+        options '*' do
+
+          headers allow_cors
 
         end
 
