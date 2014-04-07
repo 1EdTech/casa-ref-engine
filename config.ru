@@ -3,13 +3,17 @@ require 'json'
 require 'sequel'
 
 require 'casa/engine/app'
+require 'casa/engine/admin_app'
 require 'casa/attribute/loader'
 require 'casa/engine/attribute/loader'
 require 'casa/support/scoped_logger'
 
 base_path = Pathname.new(__FILE__).parent
 
-
+apps = [
+  CASA::Engine::App,
+  CASA::Engine::AdminApp
+]
 
 # # # # # # # # # # # # # # # # # # # #
 #
@@ -48,14 +52,15 @@ end
 
 require 'casa/engine/app'
 
-CASA::Engine::App.set settings
-
-CASA::Engine::App.set :attributes, CASA::Attribute::Loader.loaded
-
 logger = ::Logger.new STDOUT
 logger.level = ::Logger::DEBUG
 logger.datetime_format = '%Y-%m-%d %H:%M:%S'
-CASA::Engine::App.set :logger, CASA::Support::ScopedLogger.new_without_scope(logger)
+
+apps.each do |app|
+  app.set settings
+  app.set :attributes, CASA::Attribute::Loader.loaded
+  app.set :logger, CASA::Support::ScopedLogger.new_without_scope(logger)
+end
 
 
 
@@ -92,12 +97,14 @@ sequel_connection = Sequel.connect settings['database'].inject({}){|memo,(k,v)| 
   require "casa/engine/persistence/#{key}/sequel_storage_handler"
   klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
 
-  handler = klass.new({
-    :context => CASA::Engine::App.settings,
-    :db => sequel_connection
-  })
+  handler =
 
-  CASA::Engine::App.set "#{key}_handler".to_sym, handler
+  apps.each do |app|
+    app.set "#{key}_handler".to_sym, klass.new({
+      :context => app.settings,
+      :db => sequel_connection
+    })
+  end
 
 end
 
@@ -113,16 +120,23 @@ require 'elasticsearch'
 elasticsearch_client = Elasticsearch::Client.new 'log' => true
 
 begin
+
   require 'casa/engine/persistence/local_payloads/elasticsearch_storage_handler'
   klass = CASA::Engine::Persistence::LocalPayloads::ElasticsearchStorageHandler
-  handler = klass.new({
-    :context => CASA::Engine::App.settings,
-    :db => elasticsearch_client,
-    :schema_class => false
-  })
-  CASA::Engine::App.set :local_payloads_index_handler, handler
+
+  apps.each do |app|
+    app.set :local_payloads_index_handler, klass.new({
+      :context => app.settings,
+      :db => elasticsearch_client,
+      :schema_class => false
+    })
+  end
+
+
 rescue
+
   logger.warn('Initialize - Index') { 'Could not initialize Elasticsearch - advanced search functions will not be available' }
+
 end
 
 
@@ -153,4 +167,7 @@ require 'casa/engine/module/admin/engine/routes.rb'
 #
 # # # # # # # # # # # # # # # # # # # #
 
-run CASA::Engine::App
+run Rack::URLMap.new({
+     "/" => CASA::Engine::App,
+     "/admin" => CASA::Engine::AdminApp
+})

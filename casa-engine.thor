@@ -77,6 +77,8 @@ class Engine < Thor
       end
     end
 
+    @settings['modules'].push 'admin'
+
   end
 
   def setup_database
@@ -158,6 +160,15 @@ class Engine < Thor
     say_section_title 'CONFIGURE LOCAL MODULE'
     configure_job_interval 'adj_in_to_local', 'AdjInToLocal'
     configure_job_interval 'local_index_rebuild', 'RebuildLocalIndex'
+
+  end
+
+  def configure_admin_module
+
+    say_section_title 'SETUP ADMIN'
+    @settings['admin'] = {}
+    @settings['admin'][:username] = ask('Username:').strip
+    @settings['admin'][:password] = ask('Password:').strip
 
   end
 
