@@ -77,17 +77,29 @@ module CASA
 
             row_query_for_identity(payload_identity, options).delete
 
+            if use_index_handler?
+              index_handler.delete payload_identity
+            end
+
           end
 
           def reset! options = nil
 
             db.run "TRUNCATE `#{db_table}`"
 
+            if use_index_handler?
+              index_handler.reset!
+            end
+
           end
 
           def teardown! options = nil
 
             db.run "DROP TABLE `#{@db_table}`"
+
+            if use_index_handler?
+              index_handler.teardown!
+            end
 
           end
 
