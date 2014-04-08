@@ -119,7 +119,8 @@ module CASA
 
           end
 
-          status 201, 'Created'
+          status 201
+          'Created'
 
         end
 
