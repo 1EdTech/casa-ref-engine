@@ -34,7 +34,7 @@ settings = JSON::parse File.read settings_file
 
 # # # # # # # # # # # # # # # # # # # #
 #
-#   ATTRIBUTES
+#   STATIC ATTRIBUTE DEFINITIONS
 #
 # # # # # # # # # # # # # # # # # # # #
 
@@ -91,13 +91,12 @@ sequel_connection = Sequel.connect settings['database'].inject({}){|memo,(k,v)| 
   'adj_in_payloads' => 'AdjInPayloads',
   'adj_in_peers' => 'AdjInPeers',
   'adj_out_payloads' => 'AdjOutPayloads',
+  'attributes' => 'Attributes',
   'local_payloads' => 'LocalPayloads'
 }.each do |key, name|
 
   require "casa/engine/persistence/#{key}/sequel_storage_handler"
   klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
-
-  handler =
 
   apps.each do |app|
     app.set "#{key}_handler".to_sym, klass.new({
@@ -141,6 +140,22 @@ end
 
 
 
+
+# # # # # # # # # # # # # # # # # # # #
+#
+#   DATABASE ATTRIBUTE OPTIONS
+#
+# # # # # # # # # # # # # # # # # # # #
+
+CASA::Engine::App.attributes_handler.get_all.each do |row|
+  options = JSON.parse row[:options]
+  apps.each { |app| app.attributes[row[:name]].options = options }
+end
+
+
+
+
+
 # # # # # # # # # # # # # # # # # # # #
 #
 #   MODULES
@@ -159,6 +174,9 @@ end
 end
 
 require 'casa/engine/module/admin/engine/routes.rb'
+
+
+
 
 
 # # # # # # # # # # # # # # # # # # # #
