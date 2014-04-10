@@ -57,14 +57,83 @@ module CASA
         })
       end
 
-      get '/attributes' do
-        json(settings.attributes.map(){ |name,attr| {
-            'name' => name,
-            'uuid' => attr.uuid,
-            'section' => attr.section,
-            'handler' => attr.class.name,
-            'options' => attr.options
-        } })
+      namespace '/attributes' do
+
+        get '' do
+          json(settings.attributes.map(){ |name,attr| {
+              'name' => name,
+              'uuid' => attr.uuid,
+              'section' => attr.section,
+              'handler' => attr.class.name,
+              'options' => attr.options
+          } })
+        end
+
+        if settings.attributes_handler
+
+          put '/:name' do
+
+            attribute_name = params[:name]
+
+            begin
+
+              request.body.rewind
+              new_options = JSON.parse request.body.read.strip
+
+              error 422, 'Unprocessable Entity' unless new_options.is_a? ::Hash
+
+              error 404, 'Not Found' unless settings.attributes.has_key? attribute_name
+
+              if Digest::MD5.hexdigest(settings.attributes[attribute_name].options.sort.to_json) == Digest::MD5.hexdigest(new_options.sort.to_json)
+                error 304, 'Not Modified'
+              end
+
+              settings.attributes_handler.delete attribute_name
+              settings.attributes_handler.create attribute_name, new_options
+
+              settings.apps.each do |app|
+                app.attributes[attribute_name].options = new_options
+              end
+
+              status 201
+              'Created'
+
+            rescue ::JSON::ParserError
+
+              error 400, 'Bad Request' # JSON wasn't valid
+
+            end
+
+          end
+
+          delete '/:name' do
+
+            attribute_name = params[:name]
+
+            if settings.attributes_handler.get attribute_name
+
+              settings.attributes_handler.delete attribute_name
+
+              settings.apps.each do |app|
+                if app.attributes_default_options and app.attributes_default_options.has_key? attribute_name
+                  app.attributes[attribute_name].options = app.attributes_default_options[attribute_name]
+                else
+                  app.attributes[attribute_name].options = {}
+                end
+              end
+
+              status 204
+
+            else
+
+              error 404, 'Not Found'
+
+            end
+
+          end
+
+        end
+
       end
 
       namespace '/local' do

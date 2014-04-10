@@ -34,19 +34,7 @@ settings = JSON::parse File.read settings_file
 
 # # # # # # # # # # # # # # # # # # # #
 #
-#   STATIC ATTRIBUTE DEFINITIONS
-#
-# # # # # # # # # # # # # # # # # # # #
-
-CASA::Engine::Attribute::Loader.new(base_path + 'settings' + 'attributes').definitions.each do |attribute|
-  CASA::Attribute::Loader.load! attribute
-end
-
-
-
-# # # # # # # # # # # # # # # # # # # #
-#
-#   CORE
+#   CORE & STATIC ATTRIUTES
 #
 # # # # # # # # # # # # # # # # # # # #
 
@@ -56,9 +44,18 @@ logger = ::Logger.new STDOUT
 logger.level = ::Logger::DEBUG
 logger.datetime_format = '%Y-%m-%d %H:%M:%S'
 
+attributes_default_options = {}
+CASA::Engine::Attribute::Loader.new(base_path + 'settings' + 'attributes').definitions.each do |attribute|
+  attributes_default_options[attribute['name']] = attribute['options'] if attribute.has_key? 'options'
+  CASA::Attribute::Loader.load! attribute
+end
+attributes = CASA::Attribute::Loader.loaded
+
 apps.each do |app|
   app.set settings
-  app.set :attributes, CASA::Attribute::Loader.loaded
+  app.set :attributes_default_options, attributes_default_options
+  app.set :attributes, attributes
+  app.set :apps, apps
   app.set :logger, CASA::Support::ScopedLogger.new_without_scope(logger)
 end
 
@@ -99,10 +96,7 @@ sequel_connection = Sequel.connect settings['database'].inject({}){|memo,(k,v)| 
   klass = "CASA::Engine::Persistence::#{name}::SequelStorageHandler".split('::').inject(Object) {|o,c| o.const_get c}
 
   apps.each do |app|
-    app.set "#{key}_handler".to_sym, klass.new({
-      :context => app.settings,
-      :db => sequel_connection
-    })
+    app.set "#{key}_handler".to_sym, klass.new({:context => app.settings, :db => sequel_connection})
   end
 
 end

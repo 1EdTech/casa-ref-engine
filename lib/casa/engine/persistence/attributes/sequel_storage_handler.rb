@@ -1,4 +1,5 @@
 require 'casa/engine/persistence/base/sequel_storage_handler'
+require 'json'
 
 module CASA
   module Engine
@@ -20,9 +21,9 @@ module CASA
 
           end
 
-          def get name, options = nil
+          def get attribute_name, options = nil
 
-            row = db[db_table].where(:name => name).first
+            row = db[db_table].where(:name => attribute_name).first
             row ? row : false
 
           end
@@ -30,6 +31,18 @@ module CASA
           def get_all options = nil
 
             db[db_table]
+
+          end
+
+          def create attribute_name, attribute_options, query_options = nil
+
+            db[db_table].insert :name => attribute_name, :options => attribute_options.to_json
+
+          end
+
+          def delete attribute_name, options = nil
+
+            db[db_table].where(:name => attribute_name).delete
 
           end
 
