@@ -105,6 +105,10 @@ module CASA
 
           private
 
+          def index_handler
+            context.local_payloads_index_handler
+          end
+
           def use_index_handler?
             index_handler and index_handler != self
           end

@@ -7,7 +7,7 @@ module CASA
 
       allow_cors = {
           "Access-Control-Allow-Origin" => "*",
-          "Access-Control-Allow-Methods" => "GET,POST",
+          "Access-Control-Allow-Methods" => "GET, POST, PUT, DELETE, OPTIONS",
           "Access-Control-Allow-Headers" => "Origin, X-Requested-With, Content-Type, Accept"
       }
 
@@ -43,7 +43,16 @@ module CASA
 
       end
 
+      options '*' do
+
+        headers allow_cors
+
+      end
+
       get '/settings' do
+
+        headers allow_cors
+
         json({
           'modules' => settings.modules,
           'database' => settings.database.select(){|k,_| k != 'password'},
@@ -55,11 +64,15 @@ module CASA
               'handler' => attr.class.name
           } }
         })
+
       end
 
       namespace '/attributes' do
 
         get '' do
+
+          headers allow_cors
+
           json(settings.attributes.map(){ |name,attr| {
               'name' => name,
               'uuid' => attr.uuid,
@@ -67,11 +80,14 @@ module CASA
               'handler' => attr.class.name,
               'options' => attr.options
           } })
+
         end
 
         if settings.attributes_handler
 
           put '/:name' do
+
+            headers allow_cors
 
             attribute_name = params[:name]
 
@@ -107,6 +123,8 @@ module CASA
           end
 
           delete '/:name' do
+
+            headers allow_cors
 
             attribute_name = params[:name]
 
