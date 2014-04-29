@@ -167,8 +167,9 @@ class Engine < Thor
 
     say_section_title 'SETUP ADMIN'
     @settings['admin'] = {}
-    @settings['admin'][:username] = ask('Username:').strip
-    @settings['admin'][:password] = ask('Password:').strip
+    @settings['admin'][:username] = ask('Auth Username:').strip
+    @settings['admin'][:password] = ask('Auth Password:').strip
+    @settings['admin'][:origin] = ask('Outlet Cross-Domain Origin:').strip
 
   end
 

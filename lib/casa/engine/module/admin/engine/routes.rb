@@ -5,11 +5,14 @@ module CASA
   module Engine
     class AdminApp
 
-      allow_cors = {
-          "Access-Control-Allow-Origin" => "*",
-          "Access-Control-Allow-Methods" => "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers" => "Origin, X-Requested-With, Content-Type, Accept"
-      }
+      def allow_cors
+        {
+            "Access-Control-Allow-Origin" => settings.admin['origin'],
+            "Access-Control-Allow-Methods" => "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers" => "Origin, X-Requested-With, Content-Type, Accept",
+            "Access-Control-Allow-Credentials" => "true"
+        }
+      end
 
       def handlers
 
