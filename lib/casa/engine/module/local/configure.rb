@@ -20,7 +20,7 @@ module CASA
             CASA::Engine::Job::LoadPayloads::AdjInToLocal.new(settings).execute
 
             # if an index handler exists and it's not already attached to local payloads handler, go ahead and
-            if local_payloads_index_handler
+            if defined? local_payloads_index_handler
               unless local_payloads_handler == local_payloads_index_handler or local_payloads_handler.index_handler
                 local_payloads_handler.index_handler = local_payloads_index_handler
                 rebuild_local_index_job.execute if rebuild_local_index_job
