@@ -1,6 +1,20 @@
 # CASA Engine
 
-[![Build Status](https://travis-ci.org/AppSharing/casa-engine.png)](https://travis-ci.org/AppSharing/casa-engine) [![Dependency Status](https://gemnasium.com/AppSharing/casa-engine.png)](https://gemnasium.com/AppSharing/casa-engine) [![Code Climate](https://codeclimate.com/github/AppSharing/casa-engine.png)](https://codeclimate.com/github/AppSharing/casa-engine)
+The [Community App Sharing Architecture (CASA)](http://imsglobal.github.io/casa) provides a mechanism for
+discovering and sharing metadata about web resources such as websites, mobile
+apps and LTI tools. It models real-world decision-making through extensible
+attributes, filter and transform operations, flexible peering relationships,
+etc.
+
+This Ruby gem is the core of the CASA reference implementation, integrating
+the [casa-publisher](https://github.com/IMSGlobal/casa-publisher) and [casa-receiver](https://github.com/IMSGlobal/casa-receiver) gems, implementing the CASA Local Module,
+providing a hook-based architecture for persistence layers and attributes, and
+exposing an interface for administering the engine.
+
+## License
+
+This software is **open-source** and licensed under the Apache 2 license.
+The full text of the license may be found in the `LICENSE` file.
 
 ## Setup
 
