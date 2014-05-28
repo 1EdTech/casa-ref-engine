@@ -234,6 +234,87 @@ module CASA
 
       end
 
+      namespace '/in' do
+
+        get '/peers' do
+
+          headers allow_cors
+
+          peers = []
+          settings.adj_in_peers_handler.get_all.each do |row|
+            peers.push({
+              'name' => row[:name],
+              'uri' => row[:uri],
+              'secret' => row[:secret],
+            })
+          end
+
+          json peers
+
+        end
+
+        put '/peers/:name' do
+
+          headers allow_cors
+
+          peer_name = params[:name]
+
+          begin
+
+            request.body.rewind
+            new_peer = JSON.parse request.body.read.strip
+
+            error 422, 'Unprocessable Entity' unless new_peer.is_a? ::Hash
+
+            puts peer_name
+
+            current_peer = settings.adj_in_peers_handler.get peer_name
+
+            if current_peer and Digest::MD5.hexdigest(current_peer.sort.to_json) == Digest::MD5.hexdigest(new_peer.sort.to_json)
+              error 304, 'Not Modified'
+            end
+
+            settings.adj_in_peers_handler.delete peer_name if current_peer
+            settings.adj_in_peers_handler.create new_peer
+
+            status 201
+            'Created'
+
+          rescue ::JSON::ParserError
+
+            error 400, 'Bad Request' # JSON wasn't valid
+
+          end
+
+        end
+
+        delete '/peers/:name' do
+
+          headers allow_cors
+
+          peer_name = params[:name]
+
+          begin
+
+            current_peer = settings.adj_in_peers_handler.get peer_name
+
+            error 404, 'Not Found' unless current_peer
+
+            settings.adj_in_peers_handler.delete peer_name
+
+            status 204
+            'No Content'
+
+          rescue ::JSON::ParserError
+
+            error 400, 'Bad Request' # JSON wasn't valid
+
+          end
+
+        end
+
+      end
+
     end
   end
 end

@@ -34,6 +34,43 @@ module CASA
 
           end
 
+          def create peer_hash
+
+            begin
+
+              puts peer_hash
+
+              db[db_table].insert(
+                  :name => peer_hash['name'],
+                  :uri => peer_hash['uri'],
+                  :secret => peer_hash.include?('secret') ? peer_hash['secret'] : nil
+              )
+
+              true
+
+            rescue
+
+              false
+
+            end
+
+          end
+
+          def delete peer_name
+
+            begin
+
+              db[db_table].where({:name=>peer_name}).delete
+              true
+
+            rescue
+
+              false
+
+            end
+
+          end
+
         end
       end
     end
