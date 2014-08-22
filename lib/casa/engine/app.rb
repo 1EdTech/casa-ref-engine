@@ -6,6 +6,7 @@ module CASA
     class App < Sinatra::Base
 
       register Sinatra::Namespace
+      set :protection, :except => :frame_options
 
     end
   end
